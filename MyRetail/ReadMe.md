@@ -7,9 +7,10 @@
 (b). ProductNotFoundEexception is thrown when the product id supplied by the caller does not exist in the local storage<br/>
 (c). RestClientException is thrown when product information is not supplied by https://redsky.target.com<br/>
 (d). FilePersistanceException is thrown when Product.txt file either does not exist or the application is not pointed to the correct location.<br/>
-Please read step 3 to fix this error.
+Please read step 3 to fix this error.<br/>
 
-6. Clippings of test results are provided in .JPG files.
+
+Below are clippings of the tests.<br/>
 
 
 ![1 testputupdateintegrityexception](https://user-images.githubusercontent.com/21151617/43179960-19437938-8f9b-11e8-9bfe-b7e4009465d9.jpg)
