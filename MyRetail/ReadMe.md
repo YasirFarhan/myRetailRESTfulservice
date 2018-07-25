@@ -10,7 +10,3 @@
 Please read step 3 to fix this error.
 
 6. Clippings of test results are provided in .BMP files.
-
-
-
-![title](1.TestPUTUpdateIntegrityException.BMP)
