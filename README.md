@@ -1,0 +1,2 @@
+# myRetailRESTfulservice
+myRetail RESTful service
