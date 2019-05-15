@@ -1,19 +1,37 @@
 package com.myRetailRESTfulservice.myRetailRESTfulservice.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.myRetailRESTfulservice.myRetailRESTfulservice.exceptions.ProductNotFoundException;
 import com.myRetailRESTfulservice.myRetailRESTfulservice.exceptions.UpdateIntegrityException;
+import com.myRetailRESTfulservice.myRetailRESTfulservice.feign.RedSkyFeign;
 import com.myRetailRESTfulservice.myRetailRESTfulservice.model.Product;
+import feign.Feign;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
-import javax.xml.ws.Response;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 public class RESTController {
+    @Value("uri.firstPart")
+    String urlFirstPart;
+
+    @Value("uri.secondPart")
+    String urlSecondPart;
+
+    @Autowired
+    RedSkyFeign redSkyFeign;
 
     @GetMapping(value = "/products/{id}")
     @ResponseBody
-    public Product getProduct(@PathVariable("id") long id) throws Exception{
-        Product product = dao.getProduct(id);
+    public Product getProduct(@PathVariable("id") long id) throws Exception {
+//        Product product = dao.getProduct(id);
+        Product product = new Product();
+
         if (product == null) {
             throw new ProductNotFoundException("Product does not exist in local storage");
         }
@@ -27,7 +45,7 @@ public class RESTController {
 
     @PutMapping(value = "/products/{id}")
     public void updateProduct(@PathVariable("id") long id, @RequestBody Product product)
-            throws Exception{
+            throws Exception {
         if (id != product.getId()) {
             throw new UpdateIntegrityException("Product id on the url must match Product id in the submitted data.");
         }
@@ -42,13 +60,12 @@ public class RESTController {
     }
 
 
-    private Product callExternalApi(Product prod) throws IOException, ProductNotFoundException {
+    private Product callExternalApi(Product prod) throws Exception {
 
         String productId = Long.toString(prod.getId());
-        String url = "https://redsky.target.com/v2/pdp/tcin/"
-                + productId
-                + "?excludes=taxonomy,price,promotion,bulk_ship,rating_and_review_reviews,rating_and_review_statistics,question_answer_statistics";
-        Response restTemplate = new res();
+        String url = urlFirstPart + productId + urlSecondPart;
+
+        RestTemplate restTemplate = new RestTemplate();
         Map<String, String> idMap = new HashMap<>();
         idMap.put("id", productId);
         ObjectMapper objectMapper = new ObjectMapper();
@@ -56,10 +73,10 @@ public class RESTController {
             ResponseEntity<String> jsonResponse = restTemplate.getForEntity(url, String.class, idMap);
             Map<String, Map> infoMap = infoMap = objectMapper.readValue(jsonResponse.getBody(), Map.class);
             Map<String, Map> productMap = infoMap.get("product");
-            Map< String, Map<String, String>> itemMap = productMap.get("item");
+            Map<String, Map<String, String>> itemMap = productMap.get("item");
             String prodDesc = itemMap.get("product_description").get("title");
             prod.setName(prodDesc);
-        } catch (IOException | RestClientException e) {
+        } catch (Exception e) {
             throw new ProductNotFoundException("Product does not exist at redsky.target.com.   Error Mesage :  " + e.getMessage());
         }
 

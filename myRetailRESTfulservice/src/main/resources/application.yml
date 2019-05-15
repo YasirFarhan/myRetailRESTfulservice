@@ -1,0 +1,2 @@
+uri.firstPart: https://redsky.target.com/v2/pdp/tcin/
+url.secondPart: ?excludes=taxonomy,price,promotion,bulk_ship,rating_and_review_reviews,rating_and_review_statistics,question_answer_statistics
